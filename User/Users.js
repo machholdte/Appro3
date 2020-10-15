@@ -23,3 +23,16 @@ class PaymentUser extends User {
         this.creditcard = creditcard;
     }
 }
+
+// Derefter koder jeg mine users, idet vi ikke har en frontend eller DB. 
+
+// Hardcoder 4 objekter (users) som bliver lavet ud fra mine 2 klasser. 
+let birgitteFree = new FreeUser(1, "Birgitte", 28, "Kvinde", "Tømrer", "Fodbold");
+let thomasFree = new FreeUser(2, "Thomas", 25, "Mand", "Maler", "Gaming");
+let thorPay = new PaymentUser(3, "Thor", 32, "Mand", "kvinder","IT-programmering", "4000 5000 6500 8000");
+let claraPay = new PaymentUser(4, "Clara", 24, "Kvinde", "Pædagog", "Skateboard", "5000, 4000, 3000, 2000");
+
+
+let allUsers = [birgitteFree, thomasFree, thorPay, claraPay];
+
+module.exports = allUsers;
