@@ -1,9 +1,9 @@
-// Importet express modulet.
+// Importer express modulet.
 const express = require('express');
-// create jeg laver en router. 
+// Jeg laver en router. 
 const router = express.Router();
 
-// opretter klassen User. 
+// Jeg opretter klassen User. 
 class User {
     constructor(id, navn, alder, køn, job, interresse, image) {
         this.id = id;
