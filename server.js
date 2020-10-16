@@ -1,31 +1,28 @@
-// import required essentials
+// importer http og express modulet.
 const http = require('http');
 const express = require('express');
-var cors = require('cors');
-// import `items` from `routes` folder 
-const itemsRouter = require('./routes/items');
-
-// create new app
+// laver en app, som invoker express funktionen.
 const app = express();
+
+// jeg bruges express, og json som middleware, så den kun matcher json tekst.
 app.use(express.json());
-// use it before all route definitions
-// allowing below URL to access these APIs end-points
-// you can replace this URL(http://localhost:8100) with your
-// application URL from where you are calling these APIs
-app.use(cors({origin: 'http://localhost:8100'}));
 
-/* this '/items' URL will have two end-points:
-→ localhost:3000/items/ (this returns array of objects)
-→ localhost:3000/items/:id (this returns single object)
-*/
-app.use('/items', itemsRouter);
+// definerer en standard port til 3000
+const port = 3000;
 
-// default URL to API
+
+// Jeg laver en server med http og express modulet. 
+const server = http.createServer(app);
+
+// Jeg henter data fra routes folderen.
+const itemsRouter = require('./routes/items');
+// Jeg definerer users, som den url, der skal hentes, for at se users i mit request. 
+app.use('/users', itemsRouter);
+
+// Jeg sender et standard respons, om at mit api endpoint virker, på localhost:3000, når det tilgåes. 
 app.use('/', function(req, res) {
     res.send('It works');
 });
 
-const server = http.createServer(app);
-const port = 3000;
+// Jeg aktiverer serveren, om at lytte efter kald på port 3000. 
 server.listen(port);
-console.debug('Server listening on port ' + port);

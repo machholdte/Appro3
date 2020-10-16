@@ -1,6 +1,6 @@
-// import required essentials
+// Importet express modulet.
 const express = require('express');
-// create new router
+// create jeg laver en router. 
 const router = express.Router();
 
 // opretter klassen User. 
@@ -29,36 +29,32 @@ class PaymentUser extends User {
     }
 }
 
-// Derefter koder jeg mine users, idet vi ikke har en frontend eller DB. 
+// Derefter koder jeg mine users, idet vi ikke har en DB at gemme i. 
 
 // Hardcoder 4 objekter (users) som bliver lavet ud fra mine 2 klasser. 
 let birgitteFree = new FreeUser(1, "Birgitte", 28, "Kvinde", "Tømrer", "Fodbold", "BilledeAfMig.png");
 let thomasFree = new FreeUser(2, "Thomas", 25, "Mand", "Maler", "Gaming", "BilledeAfMig.png");
-let thorPay = new PaymentUser(3, "Thor", 32, "Mand", "kvinder","IT-programmering", "BilledeAfMig.png", "4000 5000 6500 8000");
-let claraPay = new PaymentUser(4, "Clara", 24, "Kvinde", "Pædagog", "Skateboard", "BilledeAfMig.png", "5000, 4000, 3000, 2000");
+let thorPay = new PaymentUser(3, "Thor", 32, "Mand", "kvinder","IT-programmering",  "4000 5000 6500 8000", "BilledeAfMig.png");
+let claraPay = new PaymentUser(4, "Clara", 24, "Kvinde", "Pædagog", "Skateboard","5000, 4000, 3000, 2000", "BilledeAfMig.png");
 
 
 let data = [birgitteFree, thomasFree, thorPay, claraPay];
 
 
 
-// HTTP methods ↓↓ starts here.
-
-// READ
-// this api end-point of an API returns JSON data array
+// Jeg laver først et get Get response, som responderer data arrayey.
 router.get('/', function (req, res) {
     res.status(200).json(data);
 });
 
-// READ
-// this api end-point returns an object from a data array find by id
-// we get `id` from URL end-points
+
+// Jeg laver et Get request, som kan hente enkelte attributter ved Users.
 router.get('/:id', function (req, res) {
-    // find an object from `data` array match by `id`
+    // Jeg finder et specifikt objekt fra mit data array, og matcher det med item ID'et. 
     let found = data.find(function (item) {
         return item.id === parseInt(req.params.id);
     });
-    // if object found return an object else return 404 not-found
+    // Hvis det findes, skal den respondere med det den har fundet og status 200. hvis ikke, status 404, som er ikke fundet. 
     if (found) {
         res.status(200).json(found);
     } else {
@@ -66,20 +62,18 @@ router.get('/:id', function (req, res) {
     }
 });
 
-// CREATE
-// this api end-point add new object to item list
-// that is add new object to `data` array
+// Derefter laver jeg et post request, som kan oprette en ny User i listen. Jeg har valgt, at det skal være en FreeUser, da jeg ikke har creditcard info med.
 router.post('/', function (req, res) {
-    // get itemIds from data array
+   // Først hentes items ID's fra data arrayet.
     let itemIds = data.map(item => item.id);
-
-    // create new id (basically +1 of last item object)
+    
+    // Derefter sættes nyt id til +1, så hver gang der laves en bruger mere, bliver ID'et 1 større.
     let newId = itemIds.length > 0 ? Math.max.apply(Math, itemIds) + 1 : 1;
 
     // Jeg laver et objekt af FreeUser, som bliver oprettet med et nyt id hver gang. 
-    let newItem = {
-        id: newId, // generated in above step
-        navn: req.body.navn,
+    let newUser = {
+        id: newId, // Det nye ID, er oprette i variablen newId, og derfor sættes id til den. 
+        navn: req.body.navn, 
         alder: req.body.alder,
         køn: req.body.køn, 
         job: req.body.job,
@@ -87,72 +81,60 @@ router.post('/', function (req, res) {
         image: req.body.image
     };
 
-    // push new item object to data array of items
-    data.push(newItem);
+    // Jeg indsætter min nye User i data arrayet. 
+    data.push(newUser);
 
-    // return with status 201
-    // 201 means Created. The request has been fulfilled and 
-    // has resulted in one or more new resources being created. 
-    res.status(201).json(newItem);
+    // responder med status 201, som indikerer at brugeren er succesfuldt oprretet.
+    res.status(201).json(newUser);
 });
 
-// UPDATE
-// this api end-point update an existing item object
-// for that we get `id` and `title` from api end-point of item to update
+// Jeg laver en update endpoint. Dog kun med interesse (interest jvf. opgave) og image.
 router.put('/:id', function (req, res) {
-    // get item object match by `id`
+    // Jeg finder attributten som skal opdateres i mit data array. og returner den i funktionen.
     let found = data.find(function (item) {
         return item.id === parseInt(req.params.id);
     });
 
-    // check if item found
+   // Så chekken den efter, om found er true eller false. Hvis den er true, kan image og interesse opdateres. 
     if (found) {
         let updated = {
             id: found.id,
-            image: req.body.image, // set value of `title` get from req
-            interesse: req.body.interesse, // set value of `order` get from req
+            image: req.body.image, 
+            interesse: req.body.interesse, 
         };
 
-
-        // find index of found object from array of data
+       // Den findes så det index i user arrayet, hvor attributten er fundet.
         let targetIndex = data.indexOf(found);
 
-        // replace object from data list with `updated` object
+        // Vha. splice metoden, så opdaterer den så den gamle attribut, med den nye valgte attribut.
         data.splice(targetIndex, 1, updated);
 
-        // return with status 204
-        // success status response code 204 indicates
-        // that the request has succeeded
+        // 204 status sendes, hvis det virker.
         res.sendStatus(204);
     } else {
+        // Hvis found ikke er true, responderes med status 404.
         res.sendStatus(404);
     }
 });
 
-// DELETE
-// this api end-point delete an existing item object from
-// array of data, match by `id` find item and then delete
+    // Jeg laver et delete af en user, som bliver matchet med det ID, som vedkommende har i min dating app. 
 router.delete('/:id', function (req, res) {
-    // find item from array of data
+    //Igen søges efter id i useren.
     let found = data.find(function (item) {
         return item.id === parseInt(req.params.id);
     });
 
     if (found) {
-        // if item found then find index at which the item is
-        // stored in the `data` array
+         // Hvis id findes, skal den gemmes i targetIndex variabel.
         let targetIndex = data.indexOf(found);
 
-        // splice means delete item from `data` array using index
+        // Her slettes hele useren. 
         data.splice(targetIndex, 1);
     }
 
-    // return with status 204
-    // success status response code 204 indicates
-    // that the request has succeeded
+    // respons 204 sendes, ved success. 
     res.sendStatus(204);
 });
 
-// module.exports is an object included in every JS file of Node.js
-// application, whatever we assign to module.exports will be exposed as a module. 
+// Jeg eksporter modulet, så det kan bruges i andre filer.
 module.exports = router;
